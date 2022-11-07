@@ -147,9 +147,11 @@ module.exports = {
 
     getList: async(req, res) => {
 
-        const rotas = await Rota.findAll();
+        let rotas = []
 
-        for(rota in rotas){
+        rotas = await Rota.findAll();
+
+        for( const rota of rotas){
 
             const referencias = await Rotareferencia.findAll({
                 where: {
@@ -157,13 +159,13 @@ module.exports = {
                 }
             })
 
-            rotas.dataValues.referencias = referencias;
+            rotas.dataValues.referencias.push(referencias);
 
         }
 
 
         return res.json({
-            rota
+            rotas
         });
     }
 
