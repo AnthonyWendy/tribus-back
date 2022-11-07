@@ -9,6 +9,7 @@ const AuthValidator = require("./validators/auth.js");
 const AuthController = require("./controllers/auth.js");
 const RotaController = require("./controllers/rota.js");
 const LinhaController = require("./controllers/linha.js");
+const ReferenciaController = require("./controllers/referencia.js");
 
 router.get("/ping", (req, res) => {
     res.json({ pong: true });
@@ -22,6 +23,10 @@ router.put("/linha/:id", LinhaController.updateLinha);
 
 //rota
 router.post("/rota/new", RotaController.newRota);
+
+//referencia
+router.post("/referencia/new",  ReferenciaController.newReferencia);
+
 
 
 

@@ -1,7 +1,7 @@
 const Linha = require("../models/linha.js");
 
 module.exports = {
-    newLinha: async (req, res) => {
+        newLinha: async (req, res) => {
         let { nm_linha } = req.body;
         
         if(!nm_linha){

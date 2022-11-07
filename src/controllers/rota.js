@@ -5,7 +5,6 @@ const { Op } = require("sequelize");
 const idRegex = /[0-9]+/;
 
 const Rota = require("../models/rota");
-const Images = require("../models/images.js");
 const Linha = require("../models/linha.js");
 const Referencia = require("../models/referencia.js");
 const Rotareferencia = require("../models/rotareferencia.js");
@@ -26,76 +25,147 @@ const isValidMimetype = (mimetype) => {
     return false;
 };
 
-const pushImg = async (img, product, isDefault = false) => {
-    let url = await addImage(img.data);
-
-    console.log("URL   ", url);
-    let imgObj = await Images.create({
-        url,
-        default: isDefault,
-        product: product.id_produto,
-    });
-
-    return;
-};
-
 module.exports = {
     newRota: async (req, res) => {
-        let {nm_rota, id_linha} = req.body;
+        let {nm_rota, linha} = req.body;
         let { referencias } = req.body;
 
-        if(!nm_rota || !id_linha ){
+        if(!nm_rota || !linha ){
             return res.json({ 
                 error: "Informações inválidas!"
             });
         }
 
-        const linhaExists = await Linha.findByPk(id_linha);
-        
+        const linhaExists = await Linha.findByPk(linha);
+
         if(!linhaExists){
             return res.status(400).json({
                 error: "Linha não encontrada!"
             });
         }
-        console.log(nm_rota)
+
+        if (!req.files || !req.files.img || !isValidMimetype(req.files.img.mimetype)) {
+            return res.status(400).json({ 
+                error:"Imagem inválida."
+             });
+        }
+
+        const url = await addImage(req.files.img.data);
+        
         const rotaNew = await Rota.create({
             nm_rota,
-            id_linha,
+            id_linha: linha,
             flsituacao: true,
-        });
+            url_img: url
+        })
 
-        // if(referencias){
-        //     referencias = JSON.parse(referencias);
-        //     for(const referencia of referencias){
-        //         const referenciaExists = await Referencia.findByPk(referencia);
 
-        //         if(!referenciaExists){
-        //             return res.status(400).json({
-        //                 error: "Referencia não existe!"
-        //             });
-        //         }
+        if(referencias){
+            referencias = JSON.parse(referencias);
 
-        //         await Rotareferencia.create({
-        //             id_rota: rotaNew.id_rota,
-        //             id_linha: referenciaExists.id_referencia
-        //         })
-        //     }
-        // }
+            rotaNew.dataValues.referencias = []
+            
+            for(const referencia of referencias){
+                const referenciaExists = await Referencia.findByPk(referencia);
 
-        // if (!req.files || !req.files.img) {
-        //     return res.json({ rotaNew });
-        // }
-        // if (req.files.img.length == undefined) {
-        //     if (isValidMimetype(req.files.img.mimetype))
-        //         await pushImg(req.files.img, rotaNew, true);
-        // } else {
-        //     for (let i in req.files.img)
-        //         if (isValidMimetype(req.files.img[i].mimetype))
-        //             await pushImg(req.files.img[i], rotaNew, i === 0);
-        // }
+                if(!referenciaExists){
+                    return res.status(400).json({
+                        error: "Referencia não existe!"
+                    });
+                }
+
+                const referenciasNew = await Rotareferencia.create({
+                    id_rota: rotaNew.id_rota,
+                    id_referencia: referenciaExists.id_referencia
+                })
+                rotaNew.dataValues.referencias.push(referenciasNew);
+            }
+        }
 
         return res.json({
-            rotaNew,
+            rotaNew, 
+        });
+    },
+
+    updateRota: async(req,res) => {
+        let { id } = req.params;
+        let {name_rota, linha} = req.body;
+
+        if(!id){
+            return res.status(400).json({
+                error: "Rota inválida"
+            })
+        }
+        
+        const rota = await Rota.findByPk(id);
+
+        if(!rota){
+            return res.status(400).json({
+                error: "Rota não existe",
+            });
+        }
+
+        let updates = {};
+
+        if(name_rota != rota.nm_rota) updates.nm_rota = name_rota;
+        if(linha != rota.id_linha) updates.linha = linha;
+
+        if (req.files && req.files.img){
+            if (
+                ["image/jpeg", "image/jpg", "image/png"].includes(
+                    req.files.img.mimetype
+                )
+            ) {
+                let url = await addImage(req.files.img.data);
+
+                updates.url_img = url
+            }
+        }
+
+        console.log(updates);
+        await rota.update(updates);
+        return res.json({ rota });
+    },
+
+    getRota: async(req, res) => {
+        let { id } = req.params;
+
+        const rota = await Rota.findByPk(id);
+
+        const referencias = await Rotareferencia.findAll({
+            where: {
+                id_rota: id
+            }
+        })
+
+        rota.dataValues.referencias = referencias;
+
+        return res.json({
+            rota
+        });
+    },
+
+    getList: async(req, res) => {
+
+        const rotas = await Rota.findAll();
+
+        for(rota in rotas){
+
+            const referencias = await Rotareferencia.findAll({
+                where: {
+                    id_rota: id
+                }
+            })
+
+            rotas.dataValues.referencias = referencias;
+
+        }
+
+
+        return res.json({
+            rota
         });
     }
+
+    
 }

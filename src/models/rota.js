@@ -25,6 +25,10 @@ const modelSchema = db.define(
             type: DataTypes.BOOLEAN,
             allowNull: false,
         },
+        url_img: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
     },
     {
         timestamps: false,
