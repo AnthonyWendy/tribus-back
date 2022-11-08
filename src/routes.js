@@ -16,13 +16,16 @@ router.get("/ping", (req, res) => {
 });
 
 //linha
-router.post("/linha/new",  LinhaController.newLinha);
 router.get("/linha/", LinhaController.getList);
 router.get("/linha/:id", LinhaController.getLinha);
+router.post("/linha/new",  LinhaController.newLinha);
 router.put("/linha/:id", LinhaController.updateLinha);
 
 //rota
+router.get("/rota/", RotaController.getList);
+router.get("/rota/:id", RotaController.getRota);
 router.post("/rota/new", RotaController.newRota);
+router.put("/rota/:id", RotaController.updateRota);
 
 //referencia
 router.post("/referencia/new",  ReferenciaController.newReferencia);

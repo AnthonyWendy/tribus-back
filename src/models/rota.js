@@ -27,7 +27,7 @@ const modelSchema = db.define(
         },
         url_img: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
     },
     {

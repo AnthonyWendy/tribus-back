@@ -61,6 +61,7 @@ module.exports = {
 
 
         if(referencias){
+            console.log("anthony")
             referencias = JSON.parse(referencias);
 
             rotaNew.dataValues.referencias = []
@@ -117,7 +118,6 @@ module.exports = {
                 )
             ) {
                 let url = await addImage(req.files.img.data);
-
                 updates.url_img = url
             }
         }
@@ -150,19 +150,18 @@ module.exports = {
         let rotas = []
 
         rotas = await Rota.findAll();
-
-        for( const rota of rotas){
-
+        
+        for(const rota of rotas){
+            console.log(rotas)
+            console.log(rota.id_rota)
             const referencias = await Rotareferencia.findAll({
                 where: {
-                    id_rota: id
+                    id_linha: rota.id_rota
                 }
             })
-
+            console.log(referencias)
             rotas.dataValues.referencias.push(referencias);
-
         }
-
 
         return res.json({
             rotas
