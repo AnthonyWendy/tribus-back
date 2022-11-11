@@ -132,13 +132,11 @@ module.exports = {
 
         const rota = await Rota.findByPk(id);
 
-        const referencias = await Rotareferencia.findAll({
+        const referenciasRota = await Rotareferencia.findAll({
             where: {
                 id_rota: id
             }
-        })
-
-        rota.dataValues.referencias = referencias;
+        });
 
         return res.json({
             rota
@@ -147,25 +145,44 @@ module.exports = {
 
     getList: async(req, res) => {
 
-        let rotas = []
+        let rotas = [];
+        let refe = [];
+
 
         rotas = await Rota.findAll();
         
         for(const rota of rotas){
-            console.log(rotas)
-            console.log(rota.id_rota)
-            const referencias = await Rotareferencia.findAll({
+
+            const referenciasSearch = await Rotareferencia.findAll({
                 where: {
-                    id_linha: rota.id_rota
+                    id_rota: rota.id_rota
                 }
-            })
-            console.log(referencias)
-            rotas.dataValues.referencias.push(referencias);
+            });
+
         }
 
         return res.json({
             rotas
         });
+    },
+
+    getReferencias: async(req, res) => {
+        let { id } = req.params;        
+        let refe = [];
+
+        const referenciasSearch = await Rotareferencia.findAll({
+            where: {
+                id_rota: id
+            }
+        });
+
+        for(const encontradas of referenciasSearch){
+            refe = await Referencia.findByPk(encontradas.id_referencia);
+        }
+    
+      return res.json({
+        refe
+    });
     }
 
     

@@ -26,6 +26,7 @@ router.get("/rota/", RotaController.getList);
 router.get("/rota/:id", RotaController.getRota);
 router.post("/rota/new", RotaController.newRota);
 router.put("/rota/:id", RotaController.updateRota);
+router.get("/referenciassearch/:id", RotaController.getReferencias)
 
 //referencia
 router.post("/referencia/new",  ReferenciaController.newReferencia);
