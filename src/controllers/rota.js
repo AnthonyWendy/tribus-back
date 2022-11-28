@@ -27,31 +27,31 @@ const isValidMimetype = (mimetype) => {
 
 module.exports = {
     newRota: async (req, res) => {
-        let {nm_rota, linha} = req.body;
+        let { nm_rota, linha } = req.body;
         let { referencias } = req.body;
 
-        if(!nm_rota || !linha ){
-            return res.json({ 
+        if (!nm_rota || !linha) {
+            return res.json({
                 error: "Informações inválidas!"
             });
         }
 
         const linhaExists = await Linha.findByPk(linha);
 
-        if(!linhaExists){
+        if (!linhaExists) {
             return res.status(400).json({
                 error: "Linha não encontrada!"
             });
         }
 
         if (!req.files || !req.files.img || !isValidMimetype(req.files.img.mimetype)) {
-            return res.status(400).json({ 
-                error:"Imagem inválida."
-             });
+            return res.status(400).json({
+                error: "Imagem inválida."
+            });
         }
 
         const url = await addImage(req.files.img.data);
-        
+
         const rotaNew = await Rota.create({
             nm_rota,
             id_linha: linha,
@@ -60,16 +60,16 @@ module.exports = {
         })
 
 
-        if(referencias){
+        if (referencias) {
             console.log("anthony")
             referencias = JSON.parse(referencias);
 
             rotaNew.dataValues.referencias = []
-            
-            for(const referencia of referencias){
+
+            for (const referencia of referencias) {
                 const referenciaExists = await Referencia.findByPk(referencia);
 
-                if(!referenciaExists){
+                if (!referenciaExists) {
                     return res.status(400).json({
                         error: "Referencia não existe!"
                     });
@@ -84,23 +84,23 @@ module.exports = {
         }
 
         return res.json({
-            rotaNew, 
+            rotaNew,
         });
     },
 
-    updateRota: async(req,res) => {
+    updateRota: async (req, res) => {
         let { id } = req.params;
-        let {name_rota, linha} = req.body;
+        let { name_rota, linha } = req.body;
 
-        if(!id){
+        if (!id) {
             return res.status(400).json({
                 error: "Rota inválida"
             })
         }
-        
+
         const rota = await Rota.findByPk(id);
 
-        if(!rota){
+        if (!rota) {
             return res.status(400).json({
                 error: "Rota não existe",
             });
@@ -108,10 +108,10 @@ module.exports = {
 
         let updates = {};
 
-        if(name_rota != rota.nm_rota) updates.nm_rota = name_rota;
-        if(linha != rota.id_linha) updates.linha = linha;
+        if (name_rota != rota.nm_rota) updates.nm_rota = name_rota;
+        if (linha != rota.id_linha) updates.linha = linha;
 
-        if (req.files && req.files.img){
+        if (req.files && req.files.img) {
             if (
                 ["image/jpeg", "image/jpg", "image/png"].includes(
                     req.files.img.mimetype
@@ -127,7 +127,7 @@ module.exports = {
         return res.json({ rota });
     },
 
-    getRota: async(req, res) => {
+    getRota: async (req, res) => {
         let { id } = req.params;
 
         const rota = await Rota.findByPk(id);
@@ -143,15 +143,15 @@ module.exports = {
         });
     },
 
-    getList: async(req, res) => {
+    getList: async (req, res) => {
 
         let rotas = [];
         let refe = [];
 
 
         rotas = await Rota.findAll();
-        
-        for(const rota of rotas){
+
+        for (const rota of rotas) {
 
             const referenciasSearch = await Rotareferencia.findAll({
                 where: {
@@ -166,8 +166,8 @@ module.exports = {
         });
     },
 
-    getReferencias: async(req, res) => {
-        let { id } = req.params;        
+    getReferencias: async (req, res) => {
+        let { id } = req.params;
         let refe = [];
 
         const referenciasSearch = await Rotareferencia.findAll({
@@ -176,14 +176,15 @@ module.exports = {
             }
         });
 
-        for(const encontradas of referenciasSearch){
-            refe = await Referencia.findByPk(encontradas.id_referencia);
+        for (const encontradas of referenciasSearch) {
+            const value = await Referencia.findByPk(encontradas.id_referencia);
+            refe.push(value)
         }
-    
-      return res.json({
-        refe
-    });
+
+        return res.json(
+            refe
+        );
     }
 
-    
+
 }

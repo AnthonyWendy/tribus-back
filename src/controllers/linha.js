@@ -1,17 +1,20 @@
 const Linha = require("../models/linha.js");
 
 module.exports = {
-        newLinha: async (req, res) => {
-        let { nm_linha } = req.body;
+    
+    newLinha: async (req, res) => {
+        let { name } = req.body;
         
-        if(!nm_linha){
+        if(!name){
             return res.status(400).json({
                 error: "Nome inválido",
             });
         }
 
+        console.log(name)
+
         const linha = await Linha.create({
-            nm_linha: nm_linha,
+            nm_linha: name,
             flsituacao: true
         })
 
@@ -29,9 +32,7 @@ module.exports = {
             })
         }
 
-        let linha = await Linha.findAll({
-            where: {id_linha: id}
-        });
+        let linha = await Linha.findByPk(id);
 
         if(!linha){
             return res.json({
@@ -45,7 +46,6 @@ module.exports = {
     },
 
     getList: async (req, res) => {
-        
 
         const listLinha = await Linha.findAll({
             order: [["nm_linha", "desc"]],
