@@ -27,8 +27,10 @@ const isValidMimetype = (mimetype) => {
 
 module.exports = {
     newRota: async (req, res) => {
-        let { nm_rota, linha } = req.body;
+        let { nm_rota, linha, horario } = req.body;
         let { referencias } = req.body;
+
+        console.log(req.body)
 
         if (!nm_rota || !linha) {
             return res.json({
@@ -55,6 +57,7 @@ module.exports = {
         const rotaNew = await Rota.create({
             nm_rota,
             id_linha: linha,
+            horario,
             flsituacao: true,
             url_img: url
         })

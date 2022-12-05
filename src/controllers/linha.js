@@ -51,9 +51,9 @@ module.exports = {
             order: [["nm_linha", "desc"]],
         });
 
-         res.json({
+         res.json(
             listLinha
-        });
+        );
     },
 
     updateLinha: async (req, res) => {

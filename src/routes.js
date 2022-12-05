@@ -31,19 +31,8 @@ router.get("/referenciassearch/:id", RotaController.getReferencias);
 //referencia
 router.post("/referencia/new",  ReferenciaController.newReferencia);
 router.get("/referencia/:id", ReferenciaController.getReferencia);
-router.get("/referencias/", ReferenciaController.getList);
+router.post("/referencias/", ReferenciaController.getList);
 router.put("/referencia/", ReferenciaController.updateReferencia);
-
-
-
-
-
-
-
-
-
-
-
 
 // AUTH
 router.post("/user/signin", AuthValidator.signin, AuthController.signin);

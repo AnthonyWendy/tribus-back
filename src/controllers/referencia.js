@@ -3,7 +3,7 @@ const Linha = require("../models/linha");
 
 module.exports = {
     newReferencia: async (req, res) => {
-        let {nm_referencia, linha} = req.body;
+        let {nm_referencia, id_linha} = req.body;
 
         if(!nm_referencia){
             return res.status(400).json({
@@ -11,7 +11,7 @@ module.exports = {
             })
         }
 
-        const linhaExists = await Linha.findByPk(linha);
+        const linhaExists = await Linha.findByPk(id_linha);
 
         if(!linhaExists){
             return res.status(404).json({
@@ -21,7 +21,7 @@ module.exports = {
 
         const referenciaNew = await Referencia.create({
             nm_referencia,
-            id_linha: linha,
+            id_linha: id_linha,
             flsituacao: true
         });
 
@@ -91,15 +91,18 @@ module.exports = {
     },
 
     getList: async (req,res) => {
-
-        const referencias = await Referencia.findAll({
-            order: ["nm_referencia", "desc"]
-        });
+        let {id_linha} = req.body;
+        console.log(id_linha)
+        const referencias = await Referencia.findAll(
+            {
+                where: {id_linha}
+            }
+        );
 
         res.json({
             referencias
         });
 
 
-    }
+    },
 }

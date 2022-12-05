@@ -13,6 +13,10 @@ const modelSchema = db.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        horario: {
+            type: DataTypes.TIME,
+            allowNull: true
+        },
         id_linha: {
             type: DataTypes.INTEGER,
             allowNull: false,
